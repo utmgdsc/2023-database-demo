@@ -1,17 +1,24 @@
 from pymongo import MongoClient
+from pymongo.server_api import ServerApi
+import sys
 
-global current_user
-# Press the green button in the gutter to run the script.
+# user
+# pzcPKYCyH3iTJl1y
 
-
+client = MongoClient("mongodb+srv://user:pzcPKYCyH3iTJl1y@cluster0.bvru9z5.mongodb.net/?retryWrites=true&w=majority",
+                     server_api=ServerApi('1'))
+db = client["database"]
+collection = db["users"]
+print(f"Database loaded with {collection.count_documents({})} users")
+current_user = None
 def does_user_exist(username) -> bool:
     # TODO implement this function
-    pass
+    return bool(collection.find_one({"username": username}))
 
 
 def register_user(username, password):
     # TODO implement this function
-    pass
+    collection.insert_one({"username": username, "password": password, "balance": 0})
 
 
 def signup():
@@ -28,7 +35,14 @@ def signup():
 
 def fetch_user(username):
     # TODO fetch the user from the database
-    pass
+    return collection.find_one({"username": username})
+
+
+def get_valid_int_input(request):
+    inp = input(request)
+    while not inp.isnumeric():
+        inp = input(f'Please enter a valid non-negative int!\n{request}')
+    return int(inp)
 
 
 def signin():
@@ -48,18 +62,34 @@ def signin():
 
 
 def deposit():
-    # TODO
-    pass
+    global current_user
 
+    amount = get_valid_int_input("Please enter deposit amount")
+    # TODO update database
+    collection.update_one({"username": current_user["username"]}, {"$inc": {"balance":amount}})
+
+    current_user = fetch_user(current_user["username"])
 
 def withdraw():
-    # TODO
-    pass
+    global current_user
 
+    amount = get_valid_int_input("Please enter withdraw amount")
+    # TODO update database
+    collection.update_one({"username": current_user["username"]}, {"$inc": {"balance": -amount}})
+
+    current_user = fetch_user(current_user["username"])
+
+def signout():
+    global current_user
+    current_user = None
 
 user_functions = {
     "deposit": deposit,
-    "withdraw": withdraw
+    "de": deposit,
+    "withdraw": withdraw,
+    "wd": withdraw,
+    "signout": signout,
+    "so": signout
 }
 if __name__ == '__main__':
     print("""
@@ -73,13 +103,26 @@ if __name__ == '__main__':
          |___/                                                 
     """)
     print("Welcome my cool bank, you can make your account and manage your "
-          "money!")
+          "money!\nTo exit this application at any time just type \"exit\"")
     user_inp = ""
     while user_inp != 'exit':
-        option = ''
-        while option.lower() != 'si' and option.lower() != 'su':
-            option = input("Would you like to sign in (SI) or sign-up (SU)?: ")
-        if option.lower() == 'si':
-            signin()
+        user_inp = ''
+        if not current_user:
+            user_inp = input("Would you like to sign-in (SI) or sign-up (SU)?: ")
+            if user_inp.lower() == 'si':
+                signin()
+            elif user_inp.lower() == 'su':
+                signup()
+            elif user_inp.lower() == 'exit':
+                break
+            else:
+                print('Please enter a valid option')
         else:
-            signup()
+            print(f"Hi {current_user['username']}, your balance is ${current_user['balance']}")
+            user_inp = input("Please either withdraw (WD), deposit (DE), signout (SO) or exit: ")
+            if user_inp.lower() in user_functions:
+                user_functions[user_inp]()
+            elif user_inp.lower() == 'exit':
+                break
+            else:
+                print('Please enter a valid option')
