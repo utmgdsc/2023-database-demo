@@ -1,3 +1,4 @@
+import certifi
 from pymongo import MongoClient
 from pymongo.server_api import ServerApi
 import sys
@@ -6,7 +7,7 @@ import sys
 # pzcPKYCyH3iTJl1y
 
 client = MongoClient("mongodb+srv://user:pzcPKYCyH3iTJl1y@cluster0.bvru9z5.mongodb.net/?retryWrites=true&w=majority",
-                     server_api=ServerApi('1'))
+                     server_api=ServerApi('1'), tlsCAFile=certifi.where())
 db = client["database"]
 collection = db["users"]
 print(f"Database loaded with {collection.count_documents({})} users")
@@ -121,7 +122,7 @@ if __name__ == '__main__':
             print(f"Hi {current_user['username']}, your balance is ${current_user['balance']}")
             user_inp = input("Please either withdraw (WD), deposit (DE), signout (SO) or exit: ")
             if user_inp.lower() in user_functions:
-                user_functions[user_inp]()
+                user_functions[user_inp.lower()]()
             elif user_inp.lower() == 'exit':
                 break
             else:
