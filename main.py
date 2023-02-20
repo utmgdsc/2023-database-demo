@@ -77,7 +77,7 @@ if __name__ == '__main__':
     user_inp = ""
     while user_inp != 'exit':
         option = ''
-        while option.lower() != 'si' or option.lower() != 'su':
+        while option.lower() != 'si' and option.lower() != 'su':
             option = input("Would you like to sign in (SI) or sign-up (SU)?: ")
         if option.lower() == 'si':
             signin()
