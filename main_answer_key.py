@@ -22,7 +22,6 @@ def register_user(username, password):
 
 def signup():
     username = input("Please enter your username:")
-    user_exists = does_user_exist(username)
     while does_user_exist(username):
         username = input("Sorry! This user already exists\nPlease enter your "
                          "username:")
@@ -40,21 +39,21 @@ def fetch_user(username):
 def get_valid_int_input(request):
     inp = input(request)
     while not inp.isnumeric():
-        inp = input(f'Please enter a valid non-negative int!\n{request}')
+        inp = input(f'Please enter a valid non-negative int!\n{request}: ')
     return int(inp)
 
 
 def signin():
-    username = input("Please enter your username:")
+    username = input("Please enter your username: ")
     user = fetch_user(username)
     while not user:
         username = input("Sorry! This user does not exist\nPlease enter your "
-                         "username:")
+                         "username: ")
         user = fetch_user(username)
-    password = input(f"Please enter the password for user {username}")
+    password = input(f"Please enter the password for user {username}: ")
     while password != user["password"]:
         password = input(f"Password incorrect! Please enter the password for "
-                         f"user {username}")
+                         f"user {username}: ")
     global current_user
     current_user = user
     print(f"Welcome {username}!")
@@ -63,9 +62,10 @@ def signin():
 def deposit():
     global current_user
 
-    amount = get_valid_int_input("Please enter deposit amount")
+    amount = get_valid_int_input("Please enter deposit amount: ")
     # TODO update database
-    collection.update_one({"username": current_user["username"]}, {"$inc": {"balance": amount}})
+    collection.update_one({"username": current_user["username"]},
+                          {"$inc": {"balance": amount}})
 
     current_user = fetch_user(current_user["username"])
 
@@ -73,9 +73,10 @@ def deposit():
 def withdraw():
     global current_user
 
-    amount = get_valid_int_input("Please enter withdraw amount")
+    amount = get_valid_int_input("Please enter withdraw amount: ")
     # TODO update database
-    collection.update_one({"username": current_user["username"]}, {"$inc": {"balance": -amount}})
+    collection.update_one({"username": current_user["username"]},
+                          {"$inc": {"balance": -amount}})
 
     current_user = fetch_user(current_user["username"])
 
