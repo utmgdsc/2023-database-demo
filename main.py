@@ -1,10 +1,6 @@
 import certifi
 from pymongo import MongoClient
 from pymongo.server_api import ServerApi
-import sys
-
-# user
-# pzcPKYCyH3iTJl1y
 
 client = MongoClient("mongodb+srv://user:pzcPKYCyH3iTJl1y@cluster0.bvru9z5.mongodb.net/?retryWrites=true&w=majority",
                      server_api=ServerApi('1'), tlsCAFile=certifi.where())
@@ -12,6 +8,8 @@ db = client["database"]
 collection = db["users"]
 print(f"Database loaded with {collection.count_documents({})} users")
 current_user = None
+
+
 def does_user_exist(username) -> bool:
     # TODO implement this function
     return bool(collection.find_one({"username": username}))
@@ -67,9 +65,10 @@ def deposit():
 
     amount = get_valid_int_input("Please enter deposit amount")
     # TODO update database
-    collection.update_one({"username": current_user["username"]}, {"$inc": {"balance":amount}})
+    collection.update_one({"username": current_user["username"]}, {"$inc": {"balance": amount}})
 
     current_user = fetch_user(current_user["username"])
+
 
 def withdraw():
     global current_user
@@ -80,9 +79,11 @@ def withdraw():
 
     current_user = fetch_user(current_user["username"])
 
+
 def signout():
     global current_user
     current_user = None
+
 
 user_functions = {
     "deposit": deposit,
