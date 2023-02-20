@@ -7,22 +7,22 @@ from pymongo.server_api import ServerApi
 current_user = None
 
 
-def does_user_exist(username) -> bool:
-    """
-    Checks if the <username> already exists in the database
-    :param username: the username to check
-    :return: True if it does exist, otherwise False
-    """
-    # TODO implement this function
-    pass
-
-
 def register_user(username, password):
     """
     Register the user with <username> and <password> into the database
     :param username: the user's username
     :param password: the user's password
     :return: None
+    """
+    # TODO implement this function
+    pass
+
+
+def does_user_exist(username) -> bool:
+    """
+    Checks if the <username> already exists in the database
+    :param username: the username to check
+    :return: True if it does exist, otherwise False
     """
     # TODO implement this function
     pass
