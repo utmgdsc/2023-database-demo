@@ -3,6 +3,9 @@ from pymongo import MongoClient
 from pymongo.server_api import ServerApi
 
 # TODO Connect to the database and get the users collection
+client = MongoClient("mongodb+srv://user:pzcPKYCyH3iTJl1y@cluster0.bvru9z5.mongodb.net/?retryWrites=true&w=majority", tlsCAFile=certifi.where())
+db = client["demo"]
+collection = db["users"]
 
 current_user = None
 
@@ -15,7 +18,7 @@ def register_user(username, password):
     :return: None
     """
     # TODO implement this function
-    pass
+    collection.insert_one({"username":username, "password": password})
 
 
 def does_user_exist(username) -> bool:
@@ -25,7 +28,7 @@ def does_user_exist(username) -> bool:
     :return: True if it does exist, otherwise False
     """
     # TODO implement this function
-    pass
+    return bool(collection.find_one({"username": username}))
 
 
 def signup():
@@ -50,7 +53,7 @@ def fetch_user(username):
     :return: the document with the <username>
     """
     # TODO fetch the user from the database
-    pass
+    return collection.find_one({"username": username})
 
 
 def signin():
@@ -92,8 +95,13 @@ def deposit():
     then update the user's balance in the database
     :return: none
     """
-    # TODO: update the database
-    pass
+    global current_user
+
+    amount = get_valid_int_input("Please enter deposit amount: ")
+    # TODO update database
+    collection.update_one({"username":current_user["username"]}, {"$inc": {"balance": amount}})
+
+    current_user = fetch_user(current_user["username"])
 
 
 def withdraw():
@@ -102,8 +110,13 @@ def withdraw():
     then update the user's balance in the database
     :return: none
     """
-    # TODO: update the database
-    pass
+    global current_user
+
+    amount = get_valid_int_input("Please enter withdraw amount: ")
+    # TODO update database
+    collection.update_one({"username": current_user["username"]}, {"$inc": {"balance": -amount}})
+
+    current_user = fetch_user(current_user["username"])
 
 
 def signout():
@@ -153,7 +166,7 @@ if __name__ == '__main__':
                 print('Please enter a valid option')
         else:
             print(f"Hi {current_user['username']}, your balance is "
-                  f"${current_user['balance']}")
+                  f"${current_user['balance'] if 'balance' in current_user else 0}")
             user_inp = input("Please either withdraw (WD), deposit (DE), "
                              "signout (SO) or exit: ")
             if user_inp.lower() in user_functions:
