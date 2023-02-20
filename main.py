@@ -2,6 +2,8 @@ import certifi
 from pymongo import MongoClient
 from pymongo.server_api import ServerApi
 
+# TODO Connect to the database and get the users collection
+
 current_user = None
 
 
